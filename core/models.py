@@ -1,5 +1,9 @@
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 class Blog(models.Model):
@@ -43,6 +47,23 @@ class Post(models.Model):
         post.author = request.user
         post.blog = Blog.create_if_doesnt_exist(request.user)
         post.save()
+
+
+@receiver(post_save, sender=Post)
+def notify_about_new_post(sender, instance, **kwargs):
+    subscriptions = Subscription.objects.filter(blog=instance.blog)
+    receivers = []
+    if subscriptions.exists():
+        for sub in subscriptions:
+            receivers.append(sub.user.email)
+
+        send_mail(
+            'New post',
+            'Check it out!',
+            settings.EMAIL_HOST_USER,
+            receivers,
+            fail_silently=True,
+        )
 
 
 class Subscription(models.Model):
