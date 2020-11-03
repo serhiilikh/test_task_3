@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+    <ul>
+        Subscriptions
+        {% for blog in subscribed_to %}
+            <li>
+                {{ blog.owner }}'s blog
+                <a href={% url 'unsubscribe' blog.id %}> Unsubscribe</a>
+            </li>
+        {% endfor %}
+
+        Explore
+        {% for blog in not_subscribed_to %}
+            <li>
+                {{ blog.owner }}'s blog
+                <a href={% url 'subscribe' blog.id %}>Subscribe</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
