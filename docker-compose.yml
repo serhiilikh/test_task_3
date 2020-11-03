@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+
+  web:
+    build: .
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py autocreatesuperuser --username test --password test --noinput --email 'blank@email.com' && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"

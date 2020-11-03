@@ -1,3 +1,4 @@
+from django.contrib.sites.models import Site
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from django.db.models.signals import post_save
@@ -57,9 +58,10 @@ def notify_about_new_post(sender, instance, **kwargs):
         for sub in subscriptions:
             receivers.append(sub.user.email)
 
+        current_site = Site.objects.get_current()
         send_mail(
             'New post',
-            'Check it out!',
+            f'Check it out! {current_site}/posts/{instance.id}/',
             settings.EMAIL_HOST_USER,
             receivers,
             fail_silently=True,
